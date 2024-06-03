@@ -5,5 +5,9 @@ export const validatePassword = (password: string) => {
 };
 
 export const createToken = () => {
-    return jwt.sign({}, process.env.JWT_KEY as string, { expiresIn: '2d' });
+    try {
+        return jwt.sign({}, process.env.JWT_KEY as string, { expiresIn: '2d' });
+    } catch (err) {
+        return false;
+    }
 };
