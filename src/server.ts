@@ -1,9 +1,11 @@
 import express, { urlencoded } from 'express';
+import dotenv from 'dotenv';
 import AppRoute from './routes/app';
 import AdminRoute from './routes/admin';
 
 const app = express();
 
+dotenv.config();
 app.use(urlencoded({ extended: true }));
 app.use(express.json());
 
