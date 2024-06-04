@@ -7,8 +7,6 @@ const router = Router();
 
 router.get('/ping', authPrivate, (req, res) => res.json({ pong: true }));
 
-router.get('/categories', authPrivate, categoryController.getAll);
-router.get('/categories/:id', authPrivate, categoryController.getOne);
 router.post('/categories', authPrivate, categoryController.add);
 router.put('/categories/:id', authPrivate, categoryController.update);
 router.delete('/categories/:id', authPrivate, categoryController.remove);
