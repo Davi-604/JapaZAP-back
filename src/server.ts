@@ -2,8 +2,10 @@ import express, { urlencoded } from 'express';
 import AppRoute from './routes/app';
 import AdminRoute from './routes/admin';
 import cors from 'cors';
+import multer from 'multer';
 
 const app = express();
+const upload = multer();
 
 app.use(urlencoded({ extended: true }));
 app.use(express.json());

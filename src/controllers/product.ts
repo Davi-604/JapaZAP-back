@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import * as ProductService from '../services/product';
+import * as ProductSchema from '../schemas/product';
 import z from 'zod';
 
 export const getAll: RequestHandler = async (req, res) => {
@@ -29,24 +30,29 @@ export const getOne: RequestHandler = async (req, res) => {
 
 export const add: RequestHandler = async (req, res) => {
     const { category_id } = req.params;
+    const image = req.file;
+
+    if (!image) {
+        return res.status(400).json({ error: 'Selecione uma imagem.' });
+    }
 
     req.body.price = req.body.price.replace(',', '.');
     req.body.price = parseFloat(req.body.price);
 
-    const newProductSchema = z.object({
-        name: z.string(),
-        price: z.number(),
-        image: z.string(),
-    });
-    const body = newProductSchema.safeParse(req.body);
+    const body = ProductSchema.newProductSchema.safeParse(req.body);
 
     if (body.success) {
-        const newProduct = await ProductService.add(parseInt(category_id), {
-            name: body.data.name,
-            price: body.data.price,
-            image: body.data.image,
-            category_id: parseInt(category_id),
-        });
+        const newProduct = await ProductService.add(
+            parseInt(category_id),
+            {
+                name: body.data.name,
+                price: body.data.price,
+                description: body.data.description,
+                image: '',
+                category_id: parseInt(category_id),
+            },
+            image.path
+        );
         if (newProduct) {
             return res.json({ newProduct });
         }
@@ -59,16 +65,14 @@ export const add: RequestHandler = async (req, res) => {
 
 export const update: RequestHandler = async (req, res) => {
     const { category_id, id } = req.params;
+    const image = req.file;
 
-    req.body.price = req.body.price.replace(',', '.');
-    req.body.price = parseFloat(req.body.price);
+    if (req.body.price) {
+        req.body.price = req.body.price.replace(',', '.');
+        req.body.price = parseFloat(req.body.price);
+    }
 
-    const updateProductSchema = z.object({
-        name: z.string().optional(),
-        price: z.number().optional(),
-        image: z.string().optional(),
-    });
-    const body = updateProductSchema.safeParse(req.body);
+    const body = ProductSchema.updateProductSchema.safeParse(req.body);
 
     if (body.success) {
         const updatedProduct = await ProductService.update(
@@ -79,9 +83,10 @@ export const update: RequestHandler = async (req, res) => {
             {
                 name: body.data.name,
                 price: body.data.price,
-                image: body.data.image,
+                description: body.data.description,
                 category_id: parseInt(category_id),
-            }
+            },
+            image?.path
         );
         if (updatedProduct) {
             return res.json({ updatedProduct });

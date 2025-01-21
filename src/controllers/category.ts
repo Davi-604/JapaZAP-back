@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import * as CategoryService from '../services/category';
+import * as CategorySchema from '../schemas/category';
 import z from 'zod';
 
 export const getAll: RequestHandler = async (req, res) => {
@@ -23,10 +24,7 @@ export const getOne: RequestHandler = async (req, res) => {
 };
 
 export const add: RequestHandler = async (req, res) => {
-    const newCategorySchema = z.object({
-        name: z.string(),
-    });
-    const body = newCategorySchema.safeParse(req.body);
+    const body = CategorySchema.newCategorySchema.safeParse(req.body);
 
     if (body.success) {
         const newCategory = await CategoryService.add(body.data);
@@ -43,10 +41,7 @@ export const add: RequestHandler = async (req, res) => {
 export const update: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
-    const updateSchema = z.object({
-        name: z.string().optional(),
-    });
-    const body = updateSchema.safeParse(req.body);
+    const body = CategorySchema.updateSchema.safeParse(req.body);
 
     if (body.success) {
         const updatedCategory = await CategoryService.update(parseInt(id), body.data);

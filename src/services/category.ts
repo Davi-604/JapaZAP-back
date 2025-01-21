@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export const getAll = async () => {
     try {
-        return await prisma.category.findMany();
+        return await prisma.category.findMany({ orderBy: { id: 'asc' } });
     } catch (err) {
         return false;
     }
